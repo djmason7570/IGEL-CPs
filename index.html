@@ -1,0 +1,177 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OpportunityAI</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      color: #172033;
+    }
+    header {
+      background: #14213d;
+      color: white;
+      padding: 30px 8%;
+    }
+    header p { color: #cbd5e1; }
+    main {
+      max-width: 1000px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+    .search, .card {
+      background: white;
+      padding: 20px;
+      border-radius: 14px;
+      margin-bottom: 16px;
+      border: 1px solid #e0e6ef;
+    }
+    input, select, button {
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #ccd4e0;
+      font-size: 15px;
+    }
+    input { width: 90%; max-width: 500px; }
+    button {
+      background: #2457d6;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin: 8px 4px 0 0;
+    }
+    .tag {
+      display: inline-block;
+      background: #e5edff;
+      color: #2149a0;
+      padding: 6px 10px;
+      border-radius: 20px;
+      font-size: 13px;
+    }
+    a { color: #2457d6; }
+    .muted { color: #596579; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎓 OpportunityAI</h1>
+    <p>Find your next apprenticeship or work experience opportunity.</p>
+  </header>
+
+  <main>
+    <section class="search">
+      <h2>Find opportunities</h2>
+      <input id="query"
+        placeholder="Search software, finance, engineering..."
+        oninput="render()">
+      <p>
+        <select id="type" onchange="render()">
+          <option value="All">All opportunities</option>
+          <option value="Degree apprenticeship">Degree apprenticeships</option>
+          <option value="Work experience">Work experience</option>
+        </select>
+        <select id="level" onchange="render()">
+          <option value="All">All levels</option>
+          <option value="2">Level 2</option>
+          <option value="3">Level 3</option>
+          <option value="4">Level 4</option>
+          <option value="5">Level 5</option>
+          <option value="6">Level 6</option>
+          <option value="7">Level 7</option>
+        </select>
+      </p>
+      <p id="count" class="muted"></p>
+    </section>
+
+    <section id="results"></section>
+  </main>
+
+  <script>
+    // These are demonstration records, not live vacancies.
+    const opportunities = [
+      {
+        title: "Software Engineering Degree Apprenticeship",
+        employer: "Example Technology Employer",
+        type: "Degree apprenticeship",
+        level: 6,
+        field: "software engineering technology",
+        requirements: "Check the employer's GCSE, A-level and subject requirements.",
+        skills: "Problem-solving, teamwork and interest in coding.",
+        url: "https://www.gov.uk/apply-apprenticeship"
+      },
+      {
+        title: "Business and Finance Work Experience",
+        employer: "Example Finance Employer",
+        type: "Work experience",
+        level: null,
+        field: "business finance accounting",
+        requirements: "Check the programme's age, education and location criteria.",
+        skills: "Communication, organisation and numerical skills.",
+        url: "https://www.gov.uk"
+      }
+    ];
+
+    function render() {
+      const query = document.getElementById("query")
+        .value.toLowerCase().trim();
+      const type = document.getElementById("type").value;
+      const level = document.getElementById("level").value;
+
+      const filtered = opportunities.filter(o => {
+        const matchesQuery =
+          (o.title + " " + o.employer + " " + o.field)
+            .toLowerCase().includes(query);
+        const matchesType = type === "All" || o.type === type;
+        const matchesLevel = level === "All" ||
+          String(o.level) === level;
+        return matchesQuery && matchesType && matchesLevel;
+      });
+
+      document.getElementById("count").textContent =
+        filtered.length + " demonstration result(s)";
+
+      document.getElementById("results").innerHTML =
+        filtered.length ? filtered.map((o, i) => `
+          <article class="card">
+            <span class="tag">${o.type}</span>
+            <h2>${o.title}</h2>
+            <p class="muted">${o.employer}</p>
+            <p><strong>Level:</strong> ${
+              o.level === null ? "Not applicable / not specified" :
+              "Level " + o.level
+            }</p>
+            <p><strong>What they may require:</strong> ${o.requirements}</p>
+            <p><strong>Skills:</strong> ${o.skills}</p>
+            <button onclick="analyse(${i})">Analyse opportunity</button>
+          </article>
+        `).join("") :
+        "<p>No matching results. Try another search.</p>";
+    }
+
+    function analyse(index) {
+      const matches = opportunities.filter(o => {
+        const query = document.getElementById("query")
+          .value.toLowerCase().trim();
+        const type = document.getElementById("type").value;
+        const level = document.getElementById("level").value;
+        return (o.title + " " + o.employer + " " + o.field)
+          .toLowerCase().includes(query) &&
+          (type === "All" || o.type === type) &&
+          (level === "All" || String(o.level) === level);
+      });
+      const o = matches[index];
+      if (o) {
+        alert(o.title + "\n\nRequirements: " + o.requirements +
+          "\n\nSkills: " + o.skills +
+          "\n\nThis is a basic summary, not live AI analysis.");
+      }
+    }
+
+    render();
+  </script>
+</body>
+</html>
